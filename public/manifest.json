@@ -1,0 +1,21 @@
+{
+  "name": "小票日记",
+  "short_name": "小票日记",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdfcf0",
+  "theme_color": "#fdfcf0",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2856/2856846.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2856/2856846.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

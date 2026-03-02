@@ -1,0 +1,11 @@
+{
+  "name": "receipt_dairy",
+  "bundleId": "com.receiptdiary.app",
+  "version": "1.0.0",
+  "description": "极简记账应用 - React Native 原生版本",
+  "ios": {
+    "supportsTablet": false,
+    "userInterfaceStyle": "light"
+  },
+  "requestFramePermissions": []
+}
