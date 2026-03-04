@@ -207,9 +207,9 @@ const App: React.FC = () => {
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setIsSettlementOpen(true)}
-            className="p-2 bg-amber-400 rounded-xl shadow-sm active:scale-95 transition-transform"
+            className="p-2.5 bg-stone-100 text-stone-600 rounded-xl shadow-sm active:scale-95 transition-transform border border-stone-200"
           >
-            <Receipt size={20} />
+            <Receipt size={18} />
           </button>
         </div>
       </header>

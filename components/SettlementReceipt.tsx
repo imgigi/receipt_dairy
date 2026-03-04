@@ -1,8 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Expense, Income, BudgetSettings } from '../types';
-import { X, Check, ChevronDown, ChevronUp, Zap } from 'lucide-react';
+import { X, Check, ChevronDown, ChevronUp, Zap, Download } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import { toPng } from 'html-to-image';
+import download from 'downloadjs';
 
 interface SettlementReceiptProps {
   date: string;
@@ -24,9 +26,33 @@ const SettlementReceipt: React.FC<SettlementReceiptProps> = ({
 }) => {
   const [bulkInput, setBulkInput] = useState('');
   const [isBulkOpen, setIsBulkOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const receiptRef = useRef<HTMLDivElement>(null);
 
   const totalExpense = expenses.reduce((s, e) => s + e.amount, 0);
   const totalIncome = incomes.reduce((s, i) => s + i.amount, 0);
+
+  const handleDownload = async () => {
+    if (!receiptRef.current) return;
+    setIsDownloading(true);
+    try {
+      const dataUrl = await toPng(receiptRef.current, {
+        cacheBust: true,
+        backgroundColor: '#ffffff',
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left',
+          width: '100%',
+          height: 'auto'
+        }
+      });
+      download(dataUrl, `小票日记-${date}.png`);
+    } catch (err) {
+      console.error('Download failed', err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const handleBulkSubmit = () => {
     if (!bulkInput.trim()) return;
@@ -51,22 +77,21 @@ const SettlementReceipt: React.FC<SettlementReceiptProps> = ({
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-stone-900/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-[60%] max-w-[320px] animate-slide-down">
-        <div className="bg-white p-4 pb-6 shadow-2xl border-2 border-stone-200">
+      <div className="relative w-[70%] max-w-[360px] animate-slide-down">
+        <div ref={receiptRef} className="bg-white p-4 pb-6 shadow-2xl border-2 border-stone-200">
           <div className="text-center border-b-2 border-dashed border-stone-200 pb-3 mb-4">
-            <h2 className="text-base font-bold tracking-widest text-stone-900">今日结算小票</h2>
             <p className="text-[10px] font-mono text-stone-400">{date}</p>
           </div>
           
           <div className="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar">
             {/* 省钱信息 - 缩小模块 */}
-            <div className="bg-stone-50 p-4 rounded-2xl border-2 border-stone-900 flex flex-col items-center relative shadow-sm">
-               <div className="bg-white border border-stone-900 px-2 py-0.5 rounded-full text-[8px] font-bold text-stone-900 mb-2">
+            <div className="bg-stone-50 p-3 rounded-2xl border-2 border-stone-900 flex flex-col items-center relative shadow-sm">
+               <div className="bg-white border border-stone-900 px-2 py-0.5 rounded-full text-[7px] font-bold text-stone-900 mb-1.5">
                   今日已省
                </div>
-               <h3 className="text-2xl font-cartoon text-stone-900">¥{savings.toFixed(0)}</h3>
-               <div className="w-full h-px border-t border-dashed border-stone-300 my-3"></div>
-               <div className="flex justify-between w-full text-[8px] font-bold text-stone-400">
+               <h3 className="text-xl font-cartoon text-stone-900">¥{savings.toFixed(0)}</h3>
+               <div className="w-full h-px border-t border-dashed border-stone-300 my-2"></div>
+               <div className="flex justify-between w-full text-[7px] font-bold text-stone-400">
                   <span>本月累计节省</span>
                   <span className="text-stone-900">¥{monthlySavings.toFixed(0)}</span>
                </div>
@@ -152,7 +177,21 @@ const SettlementReceipt: React.FC<SettlementReceiptProps> = ({
              </div>
           </div>
         </div>
-        <button onClick={onClose} className="mx-auto mt-4 bg-stone-900 text-white w-10 h-10 rounded-xl shadow-xl flex items-center justify-center active:scale-95 transition-transform border-2 border-white"><Check size={18} /></button>
+        <div className="flex gap-3 mt-4">
+          <button 
+            onClick={handleDownload} 
+            disabled={isDownloading}
+            className="flex-1 bg-white text-stone-900 py-3 rounded-xl shadow-xl flex items-center justify-center active:scale-95 transition-transform border-2 border-stone-900 text-[10px] font-bold gap-2"
+          >
+            <Download size={14} /> {isDownloading ? '生成中...' : '保存图片'}
+          </button>
+          <button 
+            onClick={onClose} 
+            className="flex-1 bg-stone-900 text-white py-3 rounded-xl shadow-xl flex items-center justify-center active:scale-95 transition-transform border-2 border-white text-[10px] font-bold gap-2"
+          >
+            <Check size={14} /> 确认
+          </button>
+        </div>
       </div>
     </div>
   );

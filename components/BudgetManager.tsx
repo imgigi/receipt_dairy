@@ -16,12 +16,13 @@ const BudgetManager: React.FC<BudgetManagerProps> = ({ isOpen, onClose, currentS
   const [formData, setFormData] = useState<BudgetSettings>(currentSettings);
   const [newFixedName, setNewFixedName] = useState('');
   const [newFixedAmount, setNewFixedAmount] = useState('');
-  const [showFixedTags, setShowFixedTags] = useState(false);
+  const [isAddingFixed, setIsAddingFixed] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setFormData({ ...currentSettings });
-      setNewFixedName(currentSettings.categories.fixed[0] || '房租');
+      setNewFixedName('房租');
+      setIsAddingFixed(false);
     }
   }, [currentSettings, isOpen]);
 
@@ -42,6 +43,7 @@ const BudgetManager: React.FC<BudgetManagerProps> = ({ isOpen, onClose, currentS
         return { ...prev, recurringFixed: list, fixedBudget: list.reduce((s, i) => s + i.amount, 0) };
     });
     setNewFixedAmount('');
+    setIsAddingFixed(false);
   };
 
   const removeFixedItem = (id: string) => {
@@ -84,7 +86,7 @@ const BudgetManager: React.FC<BudgetManagerProps> = ({ isOpen, onClose, currentS
                 </div>
 
                 <div className="bg-stone-50 p-6 rounded-3xl border-2 border-stone-200">
-                    <label className="block text-sm font-bold text-stone-700 mb-4">固定支出明细</label>
+                    <label className="block text-sm font-bold text-stone-700 mb-4">每月固定支出</label>
                     <div className="space-y-3 mb-6">
                         {(formData.recurringFixed || []).map(item => (
                             <div key={item.id} className="flex justify-between items-center bg-white p-4 rounded-2xl border-2 border-stone-100 shadow-sm">
@@ -97,63 +99,53 @@ const BudgetManager: React.FC<BudgetManagerProps> = ({ isOpen, onClose, currentS
                         ))}
                     </div>
                     
-                    <div className="space-y-3">
-                        <div className="relative">
-                            <button 
-                                onClick={() => setShowFixedTags(!showFixedTags)}
-                                className="w-full bg-white border-2 border-stone-200 rounded-2xl px-4 py-3 text-sm font-bold text-left flex justify-between items-center"
-                            >
-                                <span>{newFixedName || '选择项目'}</span>
-                                <ChevronDown size={16} className={`transition-transform ${showFixedTags ? 'rotate-180' : ''}`} />
-                            </button>
-                            {showFixedTags && (
-                                <div className="absolute top-full left-0 right-0 mt-2 bg-white border-4 border-stone-900 rounded-2xl shadow-xl p-2 z-50 flex flex-wrap gap-2 max-h-40 overflow-y-auto no-scrollbar">
-                                    {formData.categories.fixed.map(tag => (
-                                        <button 
-                                            key={tag}
-                                            onClick={() => { setNewFixedName(tag); setShowFixedTags(false); }}
-                                            className={`px-3 py-1.5 rounded-xl text-[10px] font-bold border-2 transition-all ${newFixedName === tag ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 text-stone-600 border-stone-200'}`}
-                                        >
-                                            {tag}
-                                        </button>
-                                    ))}
-                                    <button 
-                                        onClick={() => {
-                                            const name = prompt('输入新固定支出标签:');
-                                            if (name) {
-                                                const updated = [...formData.categories.fixed, name];
-                                                setFormData(prev => ({ ...prev, categories: { ...prev.categories, fixed: updated } }));
-                                                setNewFixedName(name);
-                                                setShowFixedTags(false);
-                                            }
-                                        }}
-                                        className="px-3 py-1.5 rounded-xl text-[10px] font-bold border-2 border-dashed border-stone-300 text-stone-400"
-                                    >
-                                        + 新增
-                                    </button>
+                    {!isAddingFixed ? (
+                        <button 
+                            onClick={() => setIsAddingFixed(true)}
+                            className="w-full py-3 border-2 border-dashed border-stone-300 rounded-2xl text-stone-400 text-xs font-bold flex items-center justify-center gap-2 hover:border-stone-900 hover:text-stone-900 transition-all"
+                        >
+                            <Plus size={14} /> 添加固定支出项目
+                        </button>
+                    ) : (
+                        <div className="space-y-3 animate-fade-in">
+                            <div className="flex gap-2">
+                                <div className="flex-1">
+                                    <input 
+                                        className="w-full bg-white border-2 border-stone-200 rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:border-stone-900" 
+                                        placeholder="项目名称 (如: 房租)" 
+                                        type="text" 
+                                        value={newFixedName} 
+                                        onChange={e => setNewFixedName(e.target.value)} 
+                                    />
                                 </div>
-                            )}
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="relative flex-1">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 font-cartoon">¥</span>
-                                <input 
-                                    className="w-full bg-white border-2 border-stone-200 rounded-2xl pl-8 pr-4 py-3 text-sm outline-none focus:border-stone-900" 
-                                    placeholder="金额" 
-                                    type="number" 
-                                    value={newFixedAmount} 
-                                    onChange={e => setNewFixedAmount(e.target.value)} 
-                                />
+                                <div className="relative flex-1">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 font-cartoon">¥</span>
+                                    <input 
+                                        className="w-full bg-white border-2 border-stone-200 rounded-2xl pl-8 pr-4 py-3 text-sm outline-none focus:border-stone-900" 
+                                        placeholder="金额" 
+                                        type="number" 
+                                        value={newFixedAmount} 
+                                        onChange={e => setNewFixedAmount(e.target.value)} 
+                                    />
+                                </div>
                             </div>
-                            <button 
-                                onClick={addFixedItem} 
-                                disabled={!newFixedName || !newFixedAmount} 
-                                className="bg-stone-900 text-white rounded-2xl px-6 flex items-center justify-center hover:bg-stone-700 disabled:opacity-30 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:translate-y-1 active:shadow-none transition-all"
-                            >
-                                <Plus size={20} />
-                            </button>
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={() => setIsAddingFixed(false)}
+                                    className="flex-1 bg-stone-100 text-stone-500 py-3 rounded-2xl font-bold text-xs"
+                                >
+                                    取消
+                                </button>
+                                <button 
+                                    onClick={addFixedItem} 
+                                    disabled={!newFixedName || !newFixedAmount} 
+                                    className="flex-2 bg-amber-400 text-stone-900 py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-[0_4px_0_0_#d97706] active:translate-y-[2px] active:shadow-[0_2px_0_0_#d97706] transition-all disabled:opacity-50"
+                                >
+                                    确认添加
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className="bg-stone-50 p-6 rounded-3xl border-2 border-stone-200">

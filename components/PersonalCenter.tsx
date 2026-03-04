@@ -72,53 +72,23 @@ const PersonalCenter: React.FC<PersonalCenterProps> = ({ settings, onSave, onOpe
 
       <section 
         onClick={onOpenBudgetManager}
-        className="bg-stone-900 text-white p-8 rounded-[2.5rem] shadow-xl cursor-pointer active:scale-95 transition-transform border-4 border-amber-400 relative overflow-hidden"
+        className="bg-stone-900 text-white p-6 rounded-[2rem] shadow-xl cursor-pointer active:scale-95 transition-transform border-2 border-amber-400 relative overflow-hidden"
       >
-        <div className="absolute -right-8 -bottom-8 w-40 h-40 bg-amber-400/10 rounded-full blur-3xl"></div>
-        <div className="relative z-10 flex justify-between items-start mb-6">
+        <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-amber-400/10 rounded-full blur-3xl"></div>
+        <div className="relative z-10 flex justify-between items-center">
           <div>
-            <h3 className="text-amber-400 text-xs font-bold uppercase tracking-widest">月度计划</h3>
-            <div className="flex items-baseline gap-2 mt-4">
-               <span className="text-5xl font-cartoon">¥{settings.savingsGoal.toLocaleString()}</span>
-               <span className="text-xs text-stone-400 font-bold">/ 存钱目标</span>
+            <h3 className="text-amber-400 text-[10px] font-bold uppercase tracking-widest">月度计划</h3>
+            <div className="flex items-baseline gap-2 mt-2">
+               <span className="text-3xl font-cartoon">¥{settings.savingsGoal.toLocaleString()}</span>
+               <span className="text-[10px] text-stone-400 font-bold">/ 存钱目标</span>
             </div>
           </div>
-          <div className="bg-amber-400 text-stone-900 p-3 rounded-2xl shadow-lg">
-             <ArrowRight size={24} />
+          <div className="bg-amber-400 text-stone-900 p-2 rounded-xl shadow-lg">
+             <ArrowRight size={18} />
           </div>
         </div>
-        
-        <div className="relative z-10 grid grid-cols-2 gap-6 border-t border-white/10 pt-6">
-           <div><p className="text-[10px] text-stone-500 mb-1 font-bold">总预算</p><p className="font-cartoon text-xl">¥{settings.totalBudget.toLocaleString()}</p></div>
-           <div><p className="text-[10px] text-stone-500 mb-1 font-bold">固定支出</p><p className="font-cartoon text-xl">¥{settings.fixedBudget.toLocaleString()}</p></div>
-        </div>
       </section>
 
-      {/* 标签管理 */}
-      <section className="bg-white p-6 rounded-[2rem] border-4 border-stone-900 shadow-sm space-y-4">
-         <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2 text-stone-900 font-bold"><Tag size={20} /><h3>标签管理</h3></div>
-            <button onClick={addCategory} className="bg-stone-900 text-white px-4 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-1 active:scale-90 transition-all"><Plus size={12}/> 新增</button>
-         </div>
-
-         <div className="flex p-1 bg-stone-100 rounded-xl">
-            <button onClick={() => setActiveCategoryTab('flexible')} className={`flex-1 py-2 text-[10px] font-bold rounded-lg ${activeCategoryTab === 'flexible' ? 'bg-white shadow-sm' : 'text-stone-400'}`}>日常</button>
-            <button onClick={() => setActiveCategoryTab('fixed')} className={`flex-1 py-2 text-[10px] font-bold rounded-lg ${activeCategoryTab === 'fixed' ? 'bg-white shadow-sm' : 'text-stone-400'}`}>固定</button>
-            <button onClick={() => setActiveCategoryTab('income')} className={`flex-1 py-2 text-[10px] font-bold rounded-lg ${activeCategoryTab === 'income' ? 'bg-white shadow-sm' : 'text-stone-400'}`}>收入</button>
-         </div>
-
-         <div className="space-y-2 max-h-[200px] overflow-y-auto no-scrollbar pr-2">
-            {formData.categories[activeCategoryTab].map((cat, i) => (
-                <div key={cat} className="flex justify-between items-center p-3 bg-stone-50 rounded-xl group">
-                   <span className="text-xs font-bold text-stone-700">{cat}</span>
-                   <div className="flex gap-4">
-                      <button onClick={() => renameCategory(i)} className="text-stone-300 hover:text-stone-900"><Edit2 size={12}/></button>
-                      <button onClick={() => deleteCategory(i)} className="text-stone-300 hover:text-red-500"><Trash2 size={12}/></button>
-                   </div>
-                </div>
-            ))}
-         </div>
-      </section>
 
       <section className="bg-white p-6 rounded-[2rem] border-4 border-stone-900 shadow-sm space-y-4">
          <div className="flex items-center gap-2 text-stone-900 font-bold"><Clock size={20} /><h3>提醒设置</h3></div>
