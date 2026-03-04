@@ -51,108 +51,108 @@ const SettlementReceipt: React.FC<SettlementReceiptProps> = ({
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-stone-900/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-sm animate-slide-down">
-        <div className="bg-white p-6 pb-10 shadow-2xl border-2 border-stone-200">
-          <div className="text-center border-b-2 border-dashed border-stone-200 pb-4 mb-6">
-            <h2 className="text-lg font-bold tracking-widest text-stone-900">今日结算小票</h2>
-            <p className="text-xs font-mono text-stone-400">{date}</p>
+      <div className="relative w-[60%] max-w-[320px] animate-slide-down">
+        <div className="bg-white p-4 pb-6 shadow-2xl border-2 border-stone-200">
+          <div className="text-center border-b-2 border-dashed border-stone-200 pb-3 mb-4">
+            <h2 className="text-base font-bold tracking-widest text-stone-900">今日结算小票</h2>
+            <p className="text-[10px] font-mono text-stone-400">{date}</p>
           </div>
           
-          <div className="space-y-6 max-h-[65vh] overflow-y-auto no-scrollbar">
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar">
             {/* 省钱信息 - 缩小模块 */}
-            <div className="bg-stone-50 p-5 rounded-2xl border-2 border-stone-900 flex flex-col items-center relative shadow-sm">
-               <div className="bg-white border border-stone-900 px-3 py-1 rounded-full text-[10px] font-bold text-stone-900 mb-3">
+            <div className="bg-stone-50 p-4 rounded-2xl border-2 border-stone-900 flex flex-col items-center relative shadow-sm">
+               <div className="bg-white border border-stone-900 px-2 py-0.5 rounded-full text-[8px] font-bold text-stone-900 mb-2">
                   今日已省
                </div>
-               <h3 className="text-4xl font-cartoon text-stone-900">¥{savings.toFixed(0)}</h3>
-               <div className="w-full h-px border-t border-dashed border-stone-300 my-4"></div>
-               <div className="flex justify-between w-full text-[10px] font-bold text-stone-400">
+               <h3 className="text-2xl font-cartoon text-stone-900">¥{savings.toFixed(0)}</h3>
+               <div className="w-full h-px border-t border-dashed border-stone-300 my-3"></div>
+               <div className="flex justify-between w-full text-[8px] font-bold text-stone-400">
                   <span>本月累计节省</span>
                   <span className="text-stone-900">¥{monthlySavings.toFixed(0)}</span>
                </div>
             </div>
 
             {/* 极速录入 */}
-            <div className="space-y-3">
-              <button onClick={() => setIsBulkOpen(!isBulkOpen)} className="w-full flex items-center justify-center gap-2 bg-stone-50 py-2 rounded-xl text-[10px] font-bold text-stone-400 border border-dashed border-stone-300 active:bg-stone-100">
-                <Zap size={12} className="text-amber-500"/> {isBulkOpen ? '收起录入' : '极速补账'}
+            <div className="space-y-2">
+              <button onClick={() => setIsBulkOpen(!isBulkOpen)} className="w-full flex items-center justify-center gap-2 bg-stone-50 py-1.5 rounded-xl text-[8px] font-bold text-stone-400 border border-dashed border-stone-300 active:bg-stone-100">
+                <Zap size={10} className="text-amber-500"/> {isBulkOpen ? '收起录入' : '极速补账'}
               </button>
               {isBulkOpen && (
                 <div className="space-y-2 animate-fade-in">
-                  <textarea value={bulkInput} onChange={e => setBulkInput(e.target.value)} placeholder="名称 金额 @标签&#10;例如: 咖啡 28 @餐饮" className="w-full h-20 bg-white border border-stone-900 rounded-xl p-3 text-xs font-bold outline-none no-scrollbar"/>
-                  <button onClick={handleBulkSubmit} className="w-full bg-stone-900 text-white py-2 rounded-xl text-[10px] font-bold">确认补账</button>
+                  <textarea value={bulkInput} onChange={e => setBulkInput(e.target.value)} placeholder="名称 金额 @标签&#10;例如: 咖啡 28 @餐饮" className="w-full h-16 bg-white border border-stone-900 rounded-xl p-2 text-[10px] font-bold outline-none no-scrollbar"/>
+                  <button onClick={handleBulkSubmit} className="w-full bg-stone-900 text-white py-1.5 rounded-xl text-[8px] font-bold">确认补账</button>
                 </div>
               )}
             </div>
 
             {/* 明细列表 - 不折叠 */}
             <div className="px-1">
-              <div className="flex items-center justify-between text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-4 border-b border-stone-100 pb-2">
+              <div className="flex items-center justify-between text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-3 border-b border-stone-100 pb-1.5">
                   <span>项目 ({expenses.length + incomes.length})</span>
                   <span>金额</span>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {incomes.length > 0 && (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     {incomes.map(item => (
                       <div key={item.id} onClick={() => onEditIncome(item)} className="flex justify-between items-start group cursor-pointer font-mono">
-                        <div className="flex flex-col flex-1 pr-4">
+                        <div className="flex flex-col flex-1 pr-3">
                           <div className="flex items-center gap-1">
-                            <span className="text-[10px] font-bold text-emerald-600">入</span>
-                            <span className="text-[10px] font-bold text-stone-900">{item.category}</span>
+                            <span className="text-[8px] font-bold text-emerald-600">入</span>
+                            <span className="text-[8px] font-bold text-stone-900">{item.category}</span>
                           </div>
-                          <span className="text-[9px] text-stone-400">{item.description}</span>
+                          <span className="text-[7px] text-stone-400">{item.description}</span>
                         </div>
-                        <span className="text-xs font-bold text-emerald-600">+{item.amount.toFixed(2)}</span>
+                        <span className="text-[10px] font-bold text-emerald-600">+{item.amount.toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {expenses.length > 0 && (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     {expenses.map(item => (
                       <div key={item.id} onClick={() => onEditExpense(item)} className="flex justify-between items-start group cursor-pointer font-mono">
-                        <div className="flex flex-col flex-1 pr-4">
+                        <div className="flex flex-col flex-1 pr-3">
                           <div className="flex items-center gap-1">
-                            <span className="text-[10px] font-bold text-stone-400">支</span>
-                            <span className="text-[10px] font-bold text-stone-900">{item.category}</span>
+                            <span className="text-[8px] font-bold text-stone-400">支</span>
+                            <span className="text-[8px] font-bold text-stone-900">{item.category}</span>
                           </div>
-                          <span className="text-[9px] text-stone-400">{item.description}</span>
+                          <span className="text-[7px] text-stone-400">{item.description}</span>
                         </div>
-                        <span className="text-xs font-bold text-stone-900">-{item.amount.toFixed(2)}</span>
+                        <span className="text-[10px] font-bold text-stone-900">-{item.amount.toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
                 )}
                 
                 {(expenses.length === 0 && incomes.length === 0) && (
-                  <p className="text-center text-stone-300 text-[10px] py-4 italic">暂无流水记录</p>
+                  <p className="text-center text-stone-300 text-[8px] py-3 italic">暂无流水记录</p>
                 )}
               </div>
             </div>
           </div>
 
           {/* 总计 - 真实小票样式 */}
-          <div className="mt-8 pt-4 border-t-2 border-dashed border-stone-200 space-y-1 font-mono">
-             <div className="flex justify-between text-[10px] text-stone-500">
+          <div className="mt-6 pt-3 border-t-2 border-dashed border-stone-200 space-y-0.5 font-mono">
+             <div className="flex justify-between text-[8px] text-stone-500">
                 <span>今日总收入</span>
                 <span>¥{totalIncome.toFixed(2)}</span>
              </div>
-             <div className="flex justify-between text-[10px] text-stone-500">
+             <div className="flex justify-between text-[8px] text-stone-500">
                 <span>今日总支出</span>
                 <span>¥{totalExpense.toFixed(2)}</span>
              </div>
-             <div className="flex justify-between text-sm font-bold text-stone-900 pt-2 border-t border-stone-100">
+             <div className="flex justify-between text-xs font-bold text-stone-900 pt-1.5 border-t border-stone-100">
                 <span>今日净省</span>
                 <span>¥{savings.toFixed(2)}</span>
              </div>
-             <div className="text-center pt-6">
-                <p className="text-[8px] text-stone-300 uppercase tracking-[0.2em]">*** 感谢使用 ***</p>
+             <div className="text-center pt-4">
+                <p className="text-[7px] text-stone-300 uppercase tracking-[0.2em]">*** 感谢使用 ***</p>
              </div>
           </div>
         </div>
-        <button onClick={onClose} className="mx-auto mt-6 bg-stone-900 text-white w-14 h-14 rounded-2xl shadow-xl flex items-center justify-center active:scale-95 transition-transform border-2 border-white"><Check size={24} /></button>
+        <button onClick={onClose} className="mx-auto mt-4 bg-stone-900 text-white w-10 h-10 rounded-xl shadow-xl flex items-center justify-center active:scale-95 transition-transform border-2 border-white"><Check size={18} /></button>
       </div>
     </div>
   );

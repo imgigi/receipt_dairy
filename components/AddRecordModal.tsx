@@ -32,11 +32,15 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({
   const [showDetails, setShowDetails] = useState(false);
   const [showTagBubble, setShowTagBubble] = useState(false);
   const [tagFilter, setTagFilter] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const savedLinesCountRef = useRef(0);
 
   useEffect(() => {
     if (isOpen) {
+      setConfirmDelete(false);
+      setIsDeleting(false);
       savedLinesCountRef.current = 0;
       if (recordToEdit) {
         setAmount(recordToEdit.amount.toString());
@@ -217,18 +221,32 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({
     }
   };
 
+  const handleDelete = () => {
+    if (!recordToEdit || !onDelete) return;
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
+    }
+    setIsDeleting(true);
+    // 延迟一小会儿执行，让用户看到“正在删除”的状态，交互更丝滑
+    setTimeout(() => {
+      onDelete(recordToEdit.id, recordType);
+      onClose();
+    }, 300);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className={`fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-300 ${isDeleting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
       <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white w-full sm:max-w-md sm:rounded-[3rem] rounded-t-[3rem] p-8 shadow-2xl animate-slide-up border-t-4 sm:border-4 border-stone-900 max-h-[95vh] overflow-y-auto no-scrollbar">
+      <div className={`relative bg-white w-full sm:max-w-md sm:rounded-[3rem] rounded-t-[3rem] p-8 shadow-2xl animate-slide-up border-t-4 sm:border-4 border-stone-900 max-h-[95vh] overflow-y-auto no-scrollbar transition-transform duration-300 ${isDeleting ? 'scale-95' : 'scale-100'}`}>
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${recordType === RecordType.EXPENSE ? 'bg-stone-900 text-white' : 'bg-emerald-600 text-white'}`}>
               <Zap size={20} />
             </div>
-            <h3 className="text-2xl font-cartoon text-stone-900">{recordToEdit ? '修改记录' : '极速补账'}</h3>
+            <h3 className="text-xl font-cartoon text-stone-900">{recordToEdit ? '修改记录' : '极速补账'}</h3>
           </div>
           <button onClick={onClose} className="p-2 text-stone-400 hover:bg-stone-100 rounded-full transition-colors"><X size={28}/></button>
         </div>
@@ -254,14 +272,14 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({
             {!recordToEdit && (
                 <div className="space-y-4">
                     <div className="flex p-1 bg-stone-100 rounded-2xl">
-                        <button type="button" onClick={() => setRecordType(RecordType.EXPENSE)} className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${recordType === RecordType.EXPENSE ? 'bg-stone-900 text-white shadow-md' : 'text-stone-400'}`}>记支出</button>
-                        <button type="button" onClick={() => setRecordType(RecordType.INCOME)} className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${recordType === RecordType.INCOME ? 'bg-emerald-600 text-white shadow-md' : 'text-stone-400'}`}>记收入</button>
+                        <button type="button" onClick={() => setRecordType(RecordType.EXPENSE)} className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all ${recordType === RecordType.EXPENSE ? 'bg-stone-900 text-white shadow-md' : 'text-stone-400'}`}>记支出</button>
+                        <button type="button" onClick={() => setRecordType(RecordType.INCOME)} className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all ${recordType === RecordType.INCOME ? 'bg-emerald-600 text-white shadow-md' : 'text-stone-400'}`}>记收入</button>
                     </div>
                     <div className="relative">
                        <textarea 
                          ref={inputRef} value={quickInput} onChange={handleInputChange}
                          placeholder="输入: 【名称】【金额】@【标签】【时长】&#10;例如: 咖啡28@餐饮3&#10;换行即保存当前行"
-                         className="w-full bg-stone-50 rounded-[2rem] p-6 text-lg font-bold min-h-[160px] outline-none border-4 border-stone-100 focus:border-stone-900 transition-all no-scrollbar shadow-inner"
+                         className="w-full bg-stone-50 rounded-[2rem] p-6 text-base font-bold min-h-[160px] outline-none border-4 border-stone-100 focus:border-stone-900 transition-all no-scrollbar shadow-inner"
                        />
                     </div>
                     <div className="flex justify-between items-center px-2">
@@ -279,8 +297,8 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({
           {showDetails && (
             <div className="space-y-4 animate-fade-in border-t-2 border-dashed border-stone-100 pt-4">
               <div className="relative border-b-4 border-stone-900 pb-2">
-                <span className="absolute left-0 bottom-2 text-4xl font-cartoon text-stone-400">¥</span>
-                <input type="number" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} className="w-full pl-10 text-5xl font-cartoon text-stone-900 outline-none bg-transparent" placeholder="0.00" />
+                <span className="absolute left-0 bottom-2 text-2xl font-cartoon text-stone-400">¥</span>
+                <input type="number" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} className="w-full pl-8 text-3xl font-cartoon text-stone-900 outline-none bg-transparent" placeholder="0.00" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-1 relative">
@@ -313,11 +331,21 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({
             </div>
           )}
 
-          <button type="submit" className="w-full bg-stone-900 text-white py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-[0_6px_0_0_#44403c] active:translate-y-[4px] active:shadow-[0_2px_0_0_#44403c] transition-all">
+          <button type="submit" className="w-full bg-stone-900 text-white py-3 rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-[0_6px_0_0_#44403c] active:translate-y-[4px] active:shadow-[0_2px_0_0_#44403c] transition-all">
              {recordToEdit ? '确认修改' : '确认记录'}
           </button>
           {recordToEdit && onDelete && (
-             <button type="button" onClick={() => onDelete(recordToEdit.id, recordType)} className="w-full text-red-500 font-bold text-xs py-2 hover:underline">删除本条记录</button>
+             <button 
+               type="button" 
+               onClick={handleDelete} 
+               className={`w-full font-bold text-xs py-2 transition-all duration-200 rounded-xl mt-2 ${
+                 confirmDelete 
+                   ? 'bg-red-500 text-white animate-shake shadow-[0_4px_0_0_#991b1b] active:translate-y-[2px] active:shadow-[0_2px_0_0_#991b1b]' 
+                   : 'text-red-500 hover:underline'
+               }`}
+             >
+               {isDeleting ? '正在删除...' : (confirmDelete ? '确定删除？' : '删除本条记录')}
+             </button>
           )}
         </form>
       </div>
